@@ -1,0 +1,26 @@
+{
+    "farmname": "My Farm",
+    "fieldsize": 4,
+    "plotplant": [
+        "",
+        "",
+        "",
+        ""
+    ],
+    "plotstatus": [
+        0,
+        0,
+        0,
+        0
+    ],
+    "invnames": [
+        "Wheat Seed",
+        "Corn Seed"
+    ],
+    "invcounts": [
+        2,
+        1
+    ],
+    "days": 1,
+    "money": 500
+}
