@@ -15,7 +15,7 @@ Tend your farm by planting, harvesting, and selling crops. Keep yourself out of 
 
 ## How to Install
 1. Download this repository
-2. Run the game with: python pyfarm.py
+2. Run the game with: python pyfarm.py or double click the .py file (should run in command prompt!)
 3. The download should contain a farmconfig.json file, but if it does not, you can create one by copying the format of the JSON in this repo
 
 ## How to Play
@@ -31,8 +31,6 @@ Tend your farm by planting, harvesting, and selling crops. Keep yourself out of 
   * When sleeping, you will be prompted to save and exit. Progress is ONLY saved if you say yes and exit the game.
 
 ## Roadmap
-* Implement seasons
-* Add weather effects that change crop growth time
 * Add animals and their products
 * Implement upgrades to the farm
 * Add random events
