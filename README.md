@@ -34,4 +34,7 @@ Tend your farm by planting, harvesting, and selling crops. Keep yourself out of 
 * Add animals and their products
 * Implement upgrades to the farm
 * Add random events
-* Add more crop types(?)
+* Market fluctuations (Bundled with overall economics update?)
+* Small-scale background storyline
+* Achievement system
+* NPCs
