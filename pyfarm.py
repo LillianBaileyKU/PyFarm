@@ -14,9 +14,25 @@ plotstatus = [0, 1, 0, 0]
 invnames = ["Wheat Seed", "Corn Seed", "Soybean Seed", "Tomato Seed", "Potato Seed"]
 invcounts = [2, 4, 1, 3, 5]
 crops = {"Wheat Seed":"Wheat", "Corn Seed":"Corn", "Soybean Seed":"Soybean", "Tomato Seed":"Tomato", "Potato Seed":"Potato"}
-cropprices = {"Wheat":50, "Corn":75, "Soybean":85, "Tomato":90, "Potato":105}
+cropprices = {"Wheat":100, "Corn":120, "Soybean":40, "Tomato":65, "Potato":90}
 days = 0
+seasonday = 1
+years = 1
 money = 1000
+seasons = ["Spring", "Summer", "Fall", "Winter"]
+seasonindex = 0
+seasonlen = 15
+seasongrowthmods = {
+    "Wheat": {"Spring":2, "Summer":1, "Fall":1, "Winter":1},
+    "Corn": {"Spring":1, "Summer":2, "Fall":1, "Winter":1},
+    "Soybean":{"Spring":1, "Summer":1, "Fall":2, "Winter":1},
+    "Tomato":{"Spring":1, "Summer":2, "Fall":1, "Winter":1},
+    "Potato":{"Spring":2, "Summer":1, "Fall":1, "Winter":1}
+}
+cropgrowtimes = {"Wheat":11, "Corn":9, "Soybean":3, "Tomato":5, "Potato":7}
+bankrupt = False
+totalmoney = 0
+cropsharvested = 0
 
 Tk().withdraw()
 filepath = filedialog.askopenfilename(title="Select your farmconfig.json file")
@@ -49,7 +65,13 @@ if menuoption == 1:
         "invnames": ["Wheat Seed", "Corn Seed"],
         "invcounts": [3, 2],
         "days": 0,
-        "money": 500
+        "money": 250,
+        "years": 1,
+        "seasonday": 1,
+        "seasonindex": 0,
+        "bankrupt": False,
+        "totalmoney": 0,
+        "cropsharvested": 0
     }
     with open(filepath, "w") as f:
         json.dump(config, f, indent=4)
@@ -62,17 +84,24 @@ if menuoption == 1:
     invcounts = config["invcounts"]
     days = config["days"]
     money = config["money"]
+    years = config["years"]
+    seasonday = config["seasonday"]
+    seasonindex = config["seasonindex"]
+    bankrupt = config["bankrupt"]
+    totalmoney = config["totalmoney"]
+    cropsharvested = config["cropsharvested"]
 
 if menuoption == 3:
     print(f"Welcome to {farmname}!")
     print("Your parents left you with a bit of cash and some seeds to get started!")
-    print("You will have 6 options to choose from.")
+    print("You will have 7 options to choose from.")
     time.sleep(1)
     print("View Field | This option will allow you to check on your crops and their stages of growth!")
     print("Plant Crops | This option will allow you to plant crops on empty plots!")
     print("Harvest Crops | This option will allow you to harvest any crop that has fully grown!")
     print("View Inventory | This option will allow you to see all the items in your inventory!")
     print("View Shop | This option will allow you to visit the shop to buy seeds and sell crops!")
+    print("View Farmer's Manual | This option will allow you to read through some information on growing crops, weather, and other useful tidbits.")
     print("Sleep | This option will allow you to end your day on the farm. You will have the chance to save and exit the game at this menu or to return to your farm for another day!")
     time.sleep(8)
     print("When in the shop, enter 'buy' to buy things or 'sell' to sell things!")
@@ -95,17 +124,25 @@ if menuoption == 2:
     invcounts = config["invcounts"]
     days = config["days"]
     money = config["money"]
+    years = config["years"]
+    seasonday = config["seasonday"]
+    seasonindex = config["seasonindex"]
+    bankrupt = config["bankrupt"]
+    totalmoney = config["totalmoney"]
+    cropsharvested = config["cropsharvested"]
 
-while True:
+
+while bankrupt != True:
     print("=================")
     print(f"You stand in the middle of {farmname}")
-    print(f"It is day {days}")
+    print(f"It is Year {years}, {seasons[seasonindex]}, Day {seasonday}")
     print("1) View Field")
     print("2) Plant Crops")
     print("3) Harvest Crops")
     print("4) View Inventory")
     print("5) View Shop")
-    print("6) Sleep")
+    print("6) View Farmer's Manual")
+    print("7) Sleep")
 
     option = int(input("What would you like to do? "))
 
@@ -140,16 +177,17 @@ while True:
     if option == 3:
         harvestindex = 0
         harvestchoice = int(input("Pick the plot to harvest: ")) - 1
-        if plotplant[harvestchoice] != "" and plotstatus[harvestchoice] == 3:
+        if plotplant[harvestchoice] != "" and plotstatus[harvestchoice] >= cropgrowtimes[plotplant[harvestchoice]]:
             if plotplant[harvestchoice] in invnames:
                 harvestindex = invnames.index(plotplant[harvestchoice])
                 invcounts[harvestindex] += 1
             else:
                 invnames.append(plotplant[harvestchoice])
                 invcounts.append(1)
+            cropsharvested += 1
             plotplant[harvestchoice] = ""
             plotstatus[harvestchoice] = 0
-        elif plotplant[harvestchoice] != "" and plotstatus[harvestchoice] != 3:
+        elif plotplant[harvestchoice] != "" and plotstatus[harvestchoice] < cropgrowtimes[plotplant[harvestchoice]]:
             print("That plot is not ready to be harvested yet!")
         elif plotplant[harvestchoice] == "":
             print("There is nothing growing in this plot!")
@@ -168,41 +206,41 @@ while True:
         marketoption = input("Would you like to buy or sell? ")
         if marketoption == "buy" or marketoption == "Buy":
             print("Item | Price")
-            print("Wheat Seed | 25")
-            print("Corn Seed | 35")
-            print("Soybean Seed | 40")
-            print("Tomato Seed | 45")
-            print("Potato Seed | 50")
+            print("Wheat Seed | 30")
+            print("Corn Seed | 50")
+            print("Soybean Seed | 25")
+            print("Tomato Seed | 35")
+            print("Potato Seed | 40")
             print("Options are CASE SENSITIVE!")
             buyoption = input("Choose your purchase: ")
             if buyoption == "Wheat Seed":
+                if money - 30 > 0:
+                    updateShopInv(buyoption)
+                    money -= 30
+                else:
+                    print("Sorry, you don't have enough money to purchase these!")
+            elif buyoption == "Corn Seed":
+                if money - 50 > 0:
+                    updateShopInv(buyoption)
+                    money -= 50
+                else:
+                    print("Sorry, you don't have enough money to purchase these!")
+            elif buyoption == "Soybean Seed":
                 if money - 25 > 0:
                     updateShopInv(buyoption)
                     money -= 25
                 else:
                     print("Sorry, you don't have enough money to purchase these!")
-            elif buyoption == "Corn Seed":
+            elif buyoption == "Tomato Seed":
                 if money - 35 > 0:
                     updateShopInv(buyoption)
                     money -= 35
                 else:
                     print("Sorry, you don't have enough money to purchase these!")
-            elif buyoption == "Soybean Seed":
+            elif buyoption == "Potato Seed":
                 if money - 40 > 0:
                     updateShopInv(buyoption)
                     money -= 40
-                else:
-                    print("Sorry, you don't have enough money to purchase these!")
-            elif buyoption == "Tomato Seed":
-                if money - 45 > 0:
-                    updateShopInv(buyoption)
-                    money -= 45
-                else:
-                    print("Sorry, you don't have enough money to purchase these!")
-            elif buyoption == "Potato Seed":
-                if money - 50 > 0:
-                    updateShopInv(buyoption)
-                    money -= 50
                 else:
                     print("Sorry, you don't have enough money to purchase these!")
             else:
@@ -224,20 +262,92 @@ while True:
                 sellchoice = input("What would you like to sell? ")
                 if sellchoice in selllist:
                     money += cropprices[sellchoice] * invcounts[invnames.index(sellchoice)]
-                    invcounts.pop(invcounts[invnames.index(sellchoice)])
-                    invnames.pop(invnames.index(sellchoice))
+                    totalmoney += cropprices[sellchoice] * invcounts[invnames.index(sellchoice)]
+                    idx = invnames.index(sellchoice)
+                    invcounts.pop(idx)
+                    invnames.pop(idx)
                 else:
                     print("Sorry, you don't seem to have that item!")
-
+    
     if option == 6:
+        print("You picked up your farmer's manual!")
+        print("PAGE 1: CROP INFORMATION")
+        print("\tWheat | Takes 11 days to grow, sells for 100 dollars. Grows faster in the spring.")
+        print("\tCorn | Takes 9 days to grow, sells for 120 dollars. Grows faster in the summer.")
+        print("\tSoybeans | Takes 3 days to grow, sells for 40 dollars. Grows faster in the fall.")
+        print("\tTomatoes | Takes 5 days to grow, sells for 65 dollars. Grows faster in the summer.")
+        print("\tPotatoes | Takes 7 days to grow, sells for 90 dollars. Grows faster in the spring.")
+        print("")
+        print("PAGE 2: SEED PRICES")
+        print("\tWheat Seeds | 30 dollars")
+        print("\tCorn Seeds | 50 dollars")
+        print("\tSoybean Seeds | 25 dollars")
+        print("\tTomato Seeds | 35 dollars")
+        print("\tPotato Seeds | 40 dollars")
+        print("")
+        print("PAGE 3: FINANCES")
+        print("\tEvery night you will pay a 75 dollar utilities and taxes bill.")
+        print("\tIf a hailstorm hits your farm, you will have to pay a 30 dollar repair fee on top of your regular bill.")
+        print("\tKeep your money above 0 or you will go bankrupt and lose your farm!")
+        print("PAGE 4: INVENTORY AND SHOP")
+        print("\tYour inventory is housed completely in one menu.")
+        print("\tSeeds are plantable crops only. Harvested crops are stored as their respective name.")
+        print("\tWhen entering the shop to buy something, inputs are case-sensitive.")
+        print("\tWhen entering the shop to sell something, you may only sell harvested crops. Never seeds.")
+        print("PAGE 5: WEATHER")
+        print("\tSome nights, the weather will change and it will affect how your farm acts.")
+        print("\t-Normal (Sunny) nights: Crops will grow at their usual rate.")
+        print("\t-Rainy nights: Crops grow slightly faster")
+        print("\t-Hailstorms: You will have to pay a 30 dollar repair fee on top of your utilities bill. Crops will grow normally.")
+        print("\t-Snowstorms (Winter Only): Crops cannot grow at all that night.")
+        print("")
+        print("PAGE 6: TIPS & WARNINGS")
+        print("\tDO NOT edit farmconfig.json manually. This can break the game.")
+        print("\tTry to balance between short-term and long term crops.")
+        print("\tRemember, you can only save when exiting the game through the sleep menu! The game will NOT autosave if you close any other way!")
+
+
+    if option == 7:
         print("You went to bed!")
-        print("Taxes were 75 dollars!")
         days += 1
+        seasonday += 1
+        if seasonday > seasonlen:
+            seasonday = 1
+            seasonindex = (seasonindex + 1) % len(seasons)
+            print(f"The season has changed! It is now {seasons[seasonindex]}")
+            if seasonindex == 0:
+                years += 1
+                print(f"A new year has begun! It is now Year {years}.")
+        weather = random.randint(1,3)
         plotindex = 0
-        money -= 75
+        if seasons[seasonindex] == "Winter" and weather == 2 or seasons[seasonindex] != "Winter" and weather == 3:            
+            money -= 105
+            print("A hailstorm rolled through! You paid 75 dollars for utilities & taxes, as well as an additional 30 dollars for building repairs!")
+        else:
+            money -= 75
+            print("You paid 75 dollars in utilities & taxes!")
+        if money <= 0:
+            bankrupt = True
         for num in plotstatus:
-            if num != 0 and num != 3:
-                plotstatus[plotindex] += 1
+            crop = plotplant[plotindex]
+            if plotplant[plotindex] != "":
+                if num != 0 and num != cropgrowtimes[crop]:
+                    if seasons[seasonindex] == "Winter" and weather != 3:
+                        dogrow = random.randint(1, 2)
+                        if dogrow == 1:
+                            plotstatus[plotindex] += 1
+                        else:
+                            plotstatus[plotindex] += 0
+                    elif seasons[seasonindex] == "Winter" and weather == 3:
+                        print("There was a massive snowstorm. None of your plants were able to grow last night!")
+                    else:
+                        if weather == 2:
+                            growrate = seasongrowthmods[crop][seasons[seasonindex]] + 1
+                        else:
+                            growrate = seasongrowthmods[crop][seasons[seasonindex]]
+                        plotstatus[plotindex] += growrate
+                        if plotstatus[plotindex] > cropgrowtimes[crop]:
+                            plotstatus[plotindex] = cropgrowtimes[crop]
             plotindex += 1
         sleepoption = input("Would you like to save and exit (y/n)? ")
         if sleepoption == "y":
@@ -250,6 +360,12 @@ while True:
             config["invcounts"] = invcounts
             config["days"] = days
             config["money"] = money
+            config["years"] = years
+            config["seasonday"] = seasonday
+            config["seasonindex"] = seasonindex
+            config["bankrupt"] = bankrupt
+            config["totalmoney"] = totalmoney
+            config["cropsharvested"] = cropsharvested
             with open(filepath, "w") as f:
                 json.dump(config, f, indent=4)
             time.sleep(2)
@@ -257,3 +373,8 @@ while True:
         if sleepoption == "n":
             sleepoption = ""
 
+if bankrupt == True:
+    print("You ran out of money!")
+    print("Your farm went into bankruptcy and was taken from you!")
+    print(f"You ran your farm for {days} days and {years} years.")
+    print(f"You managed to make {totalmoney} dollars and harvested {cropsharvested} crops.")

@@ -22,5 +22,11 @@
         1
     ],
     "days": 1,
-    "money": 500
+    "money": 500,
+    "years": 1,
+    "seasonday": 1,
+    "seasonindex": 0,
+    "bankrupt": false,
+    "totalmoney": 0,
+    "cropsharvested": 0
 }
