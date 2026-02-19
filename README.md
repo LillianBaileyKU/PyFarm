@@ -1,3 +1,4 @@
+OWNER'S NOTE: Pyfarm is coming back after a long hiatus due to college scheduling!
 # PyFarm
 A lightweight text-based farming game written in Python.
 Tend your farm by planting, harvesting, and selling crops. Keep yourself out of bankruptcy!
@@ -38,3 +39,4 @@ Tend your farm by planting, harvesting, and selling crops. Keep yourself out of 
 * Small-scale background storyline
 * Achievement system
 * NPCs
+* UI using PyGame
