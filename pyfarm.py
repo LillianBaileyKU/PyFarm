@@ -10,11 +10,11 @@ run = True
 fieldsize = 4
 plotnum = [1, 2, 3, 4]
 plotplant = ["", "", "", ""]
-plotstatus = [0, 1, 0, 0]
+plotstatus = [0, 0, 0, 0]
 invnames = ["Wheat Seed", "Corn Seed", "Soybean Seed", "Tomato Seed", "Potato Seed"]
 invcounts = [2, 4, 1, 3, 5]
-crops = {"Wheat Seed":"Wheat", "Corn Seed":"Corn", "Soybean Seed":"Soybean", "Tomato Seed":"Tomato", "Potato Seed":"Potato"}
-cropprices = {"Wheat":100, "Corn":120, "Soybean":40, "Tomato":65, "Potato":90}
+crops = {"Wheat Seed":"Wheat", "Corn Seed":"Corn", "Soybean Seed":"Soybean", "Tomato Seed":"Tomato", "Potato Seed":"Potato", "Hay Seed":"Hay", "Cow":"Milk", "Chicken":"Egg", "Sheep":"Wool"}
+cropprices = {"Wheat":120, "Corn":150, "Soybean":50, "Tomato":80, "Potato":100, "Milk":85, "Egg": 55, "Wool":105}
 days = 0
 seasonday = 1
 years = 1
@@ -29,10 +29,21 @@ seasongrowthmods = {
     "Tomato":{"Spring":1, "Summer":2, "Fall":1, "Winter":1},
     "Potato":{"Spring":2, "Summer":1, "Fall":1, "Winter":1}
 }
-cropgrowtimes = {"Wheat":11, "Corn":9, "Soybean":3, "Tomato":5, "Potato":7}
+cropgrowtimes = {"Wheat":11, "Corn":9, "Soybean":3, "Tomato":5, "Potato":7, "Hay":5}
+animaltimes = {"Cow":13, "Chicken":9, "Sheep":20}
 bankrupt = False
 totalmoney = 0
 cropsharvested = 0
+animalnum = []
+animals = []
+animalstatus = []
+animalfed = []
+plotupgrade = 1
+animalupgrade = 0
+fieldupgradeprice = 500
+animalupgradeprice = 1000
+hasanimals = False
+
 
 Tk().withdraw()
 filepath = filedialog.askopenfilename(title="Select your farmconfig.json file")
@@ -65,13 +76,21 @@ if menuoption == 1:
         "invnames": ["Wheat Seed", "Corn Seed"],
         "invcounts": [3, 2],
         "days": 0,
-        "money": 250,
+        "money": 700,
         "years": 1,
         "seasonday": 1,
         "seasonindex": 0,
         "bankrupt": False,
         "totalmoney": 0,
-        "cropsharvested": 0
+        "cropsharvested": 0,
+        "animals": [],
+        "animalstatus": [],
+        "plotupgrade": 1,
+        "animalupgrade": 0,
+        "fieldupgradeprice": 500,
+        "animalupgradeprice": 1000,
+        "hasanimals": False,
+        "animalfed": []
     }
     with open(filepath, "w") as f:
         json.dump(config, f, indent=4)
@@ -90,6 +109,8 @@ if menuoption == 1:
     bankrupt = config["bankrupt"]
     totalmoney = config["totalmoney"]
     cropsharvested = config["cropsharvested"]
+    hasanimals = config["hasanimals"]
+    animalfed = config["animalfed"]
 
 if menuoption == 3:
     print(f"Welcome to {farmname}!")
@@ -130,19 +151,38 @@ if menuoption == 2:
     bankrupt = config["bankrupt"]
     totalmoney = config["totalmoney"]
     cropsharvested = config["cropsharvested"]
+    plotupgrade = config["plotupgrade"]
+    animalupgrade = config["animalupgrade"]
+    fieldupgradeprice = config["fieldupgradeprice"]
+    animalupgradeprice = config["animalupgradeprice"]
+    animals = config["animals"]
+    animalstatus = config["animalstatus"]
+    hasanimals = config["hasanimals"]
+    animalfed = config["animalfed"]
+
 
 
 while bankrupt != True:
     print("=================")
     print(f"You stand in the middle of {farmname}")
     print(f"It is Year {years}, {seasons[seasonindex]}, Day {seasonday}")
-    print("1) View Field")
-    print("2) Plant Crops")
-    print("3) Harvest Crops")
-    print("4) View Inventory")
-    print("5) View Shop")
-    print("6) View Farmer's Manual")
-    print("7) Sleep")
+    if hasanimals == False:
+        print("1) View Field")
+        print("2) Plant Crops")
+        print("3) Harvest Crops")
+        print("4) View Inventory")
+        print("5) View Shop")
+        print("6) View Farmer's Manual")
+        print("7) Sleep")
+    else:
+        print("1) View Field")
+        print("2) Plant Crops")
+        print("3) Harvest Crops")
+        print("4) Tend Animals")
+        print("5) View Inventory")
+        print("6) View Shop")
+        print("7) View Farmer's Manual")
+        print("8) Sleep")
 
     option = int(input("What would you like to do? "))
 
@@ -192,7 +232,81 @@ while bankrupt != True:
         elif plotplant[harvestchoice] == "":
             print("There is nothing growing in this plot!")
 
-    if option == 4:
+    if hasanimals == True and option == 4:
+        animaloption = 0
+        while animaloption != 3:
+            print("You enter your barn")
+            animalindex = 0
+            for animal in animals:
+                if animals[animalindex] == "":
+                    print(f"Stall {animalindex + 1} has nothing living in it!")
+                else:
+                    print(f"Stall {animalindex + 1} has {animal} living in it! It is at production stage {animalstatus[animalindex]}!")
+                    if animalfed[animalindex]:
+                        print(f"The {animal} in stall {animalindex + 1} is fed!")
+                    else:
+                        print(f"The {animal} in stall {animalindex + 1} is unfed!")
+                animalindex += 1
+            print("1) Feed Animals")
+            print("2) Harvest Animal Products")
+            print("3) Exit Barn")
+            animaloption = int(input("What would you like to do? "))
+
+            if animaloption == 1:
+                haycount = 0
+                if "Hay" in invnames:
+                    haycount += invcounts[invnames.index("Hay")]
+                if haycount == 0:
+                    print("You don't have any hay to feed with!")
+                else:
+                    feedoption = int(input("Choose the stall you wish to feed in: ")) - 1
+                    if animalfed[feedoption] == True:
+                        print("That animal is already fed!")
+                    else:
+                        animalfed[feedoption] = True
+                        print(f"You fed the animal!")
+                        haycount -= 1
+                        invcounts[invnames.index("Hay")] -= 1
+            if animaloption == 2:
+                collectoption = int(input("Select the stall you would like to collect from: ")) -1
+                if collectoption > (len(animals) - 1) or collectoption < 0:
+                    print("You don't have that many stalls!")
+                else:
+                    animalinstall = animals[collectoption]
+                    if animals[collectoption] == "":
+                        print("That stall is empty!")
+                    elif animalstatus[collectoption] >= animaltimes[animalinstall]:
+                        if animalinstall == "Cow":
+                            if "Milk" in invnames:
+                                ind = invnames.index("Milk")
+                                invcounts[ind] += 1
+                            else:
+                                invnames.append("Milk")
+                                invcounts.append(1)
+                        elif animalinstall == "Chicken":
+                            if "Egg" in invnames:
+                                ind = invnames.index("Egg")
+                                invcounts[ind] += 1
+                            else:
+                                invnames.append("Egg")
+                                invcounts.append(1)
+                        elif animalinstall == "Sheep":
+                            if "Wool"in invnames:
+                                ind = invnames.index("Wool")
+                                invcounts[ind] += 1
+                            else:
+                                invnames.append("Wool")
+                                invcounts.append(1)
+                        animalstatus[collectoption] = 0
+                        print(f"You collected {crops[animalinstall]} from the {animalinstall}!")
+                    else:
+                        print("That animal isn't ready to collect from yet!")
+
+
+
+
+
+    if (hasanimals == False and option == 4) or (hasanimals == True and option == 5):
         invindex = 0
         print("Item | Amount")
         for item in invnames:
@@ -200,7 +314,7 @@ while bankrupt != True:
             invindex += 1
         print(f"Your wallet has {money} dollars")
 
-    if option == 5:
+    if (hasanimals == False and option == 5) or (hasanimals == True and option == 6):
         buyindex = 0
         print("Welcome to the market!")
         marketoption = input("Would you like to buy or sell? ")
@@ -211,6 +325,17 @@ while bankrupt != True:
             print("Soybean Seed | 25")
             print("Tomato Seed | 35")
             print("Potato Seed | 40")
+            print("Hay Seed | 40")
+            if hasanimals == True:
+                print("Cow | 150")
+                print("Chicken | 100")
+                print("Sheep | 250")
+            if plotupgrade != 5:
+                print(f"Field Upgrade | {fieldupgradeprice}")
+            if animalupgrade == 0:
+                print(f"Build Barn | {animalupgradeprice}")
+            elif animalupgrade != 5 and animalupgrade != 0:
+                print(f"Barn Upgrade | {animalupgradeprice}")
             print("Options are CASE SENSITIVE!")
             buyoption = input("Choose your purchase: ")
             if buyoption == "Wheat Seed":
@@ -243,6 +368,79 @@ while bankrupt != True:
                     money -= 40
                 else:
                     print("Sorry, you don't have enough money to purchase these!")
+            elif buyoption == "Hay Seed":
+                if money - 40 > 0:
+                    updateShopInv(buyoption)
+                    money -= 40
+                else:
+                    print("Sorry, you don't have enough money to purchase these!")
+            elif buyoption == "Field Upgrade":
+                if plotupgrade >= 6:
+                    print("Your field is already at max level!")
+                elif money - fieldupgradeprice > 0:
+                    money -= fieldupgradeprice
+                    plotupgrade += 1
+                    for i in range(4):
+                        plotnum.append(len(plotnum) + 1)
+                        plotplant.append("")
+                        plotstatus.append(0)
+
+                    fieldupgradeprice = int(fieldupgradeprice * 1.5)
+                    
+                    print("Your field has been upgraded!")
+                else:
+                    print("Sorry, you don't have enough money to upgrade your field!")
+            elif buyoption == "Build Barn" or buyoption == "Barn Upgrade":
+                if buyoption == "Build Barn":
+                    if animalupgrade != 0:
+                        print("You already have a barn!")
+                        continue
+                else:
+                    if animalupgrade == 0:
+                        print("You don't have a barn yet!")
+                    elif animalupgrade >= 5:
+                        print("Your barn is already at max level!")
+                
+                if money - animalupgradeprice > 0:
+                    money -= animalupgradeprice
+                    hasanimals = True
+
+                    for i in range(2):
+                        animals.append("")
+                        animalstatus.append(0)
+                        animalfed.append(False)
+                    
+                    if animalupgrade == 0:
+                        animalupgrade = 1
+                        print("Your barn was built!")
+                    else:
+                        animalupgrade += 1
+                        print("Your barn was upgraded!")
+
+                    animalupgradeprice = int(animalupgradeprice * 1.8)
+                
+                else:
+                    if buyoption == "Build Barn":
+                        print("Sorry, you don't have enough money to build a barn!")
+                    else:
+                        print("Sorry, you don't have enough money to upgrade your barn!")
+            elif buyoption in ["Cow", "Chicken", "Sheep"]:
+                if "" in animals:
+                    stall = animals.index("")
+                else:
+                    stall = None
+                if stall == None:
+                    print("No empty stalls!")
+                else:
+                    animals[stall] = buyoption
+                    animalstatus[stall] = 0
+                    animalfed[stall] = False
+                    if buyoption == "Cow":
+                        money -= 150
+                    elif buyoption == "Chicken":
+                        money -= 100
+                    elif buyoption == "Sheep":
+                        money -= 250
             else:
                 print("Sorry, I couldn't find the item you're looking for!")
         elif marketoption == "sell" or marketoption == "Sell":
@@ -250,7 +448,7 @@ while bankrupt != True:
             selllist = []
             sellindex = 0
             for thing in invnames:
-                if thing == "Wheat" or thing == "Corn" or thing == "Soybean" or thing == "Tomato" or thing == "Potato":
+                if thing == "Wheat" or thing == "Corn" or thing == "Soybean" or thing == "Tomato" or thing == "Potato" or thing == "Milk" or thing == "Egg" or thing == "Wool":
                     selllist.append(thing)
                     cansell = True
             if cansell == False:
@@ -269,7 +467,7 @@ while bankrupt != True:
                 else:
                     print("Sorry, you don't seem to have that item!")
     
-    if option == 6:
+    if (hasanimals == False and option == 6) or (hasanimals == True and option == 7):
         print("You picked up your farmer's manual!")
         print("PAGE 1: CROP INFORMATION")
         print("\tWheat | Takes 11 days to grow, sells for 100 dollars. Grows faster in the spring.")
@@ -286,7 +484,7 @@ while bankrupt != True:
         print("\tPotato Seeds | 40 dollars")
         print("")
         print("PAGE 3: FINANCES")
-        print("\tEvery night you will pay a 75 dollar utilities and taxes bill.")
+        print("\tEvery night you will pay a 35 dollar utilities and taxes bill.")
         print("\tIf a hailstorm hits your farm, you will have to pay a 30 dollar repair fee on top of your regular bill.")
         print("\tKeep your money above 0 or you will go bankrupt and lose your farm!")
         print("PAGE 4: INVENTORY AND SHOP")
@@ -298,7 +496,7 @@ while bankrupt != True:
         print("\tSome nights, the weather will change and it will affect how your farm acts.")
         print("\t-Normal (Sunny) nights: Crops will grow at their usual rate.")
         print("\t-Rainy nights: Crops grow slightly faster")
-        print("\t-Hailstorms: You will have to pay a 30 dollar repair fee on top of your utilities bill. Crops will grow normally.")
+        print("\t-Hailstorms: You will have to pay a 15 dollar repair fee on top of your utilities bill. Crops will grow normally.")
         print("\t-Snowstorms (Winter Only): Crops cannot grow at all that night.")
         print("")
         print("PAGE 6: TIPS & WARNINGS")
@@ -307,7 +505,7 @@ while bankrupt != True:
         print("\tRemember, you can only save when exiting the game through the sleep menu! The game will NOT autosave if you close any other way!")
 
 
-    if option == 7:
+    if (hasanimals == False and option == 7) or (hasanimals == True and option == 8):
         print("You went to bed!")
         days += 1
         seasonday += 1
@@ -318,30 +516,30 @@ while bankrupt != True:
             if seasonindex == 0:
                 years += 1
                 print(f"A new year has begun! It is now Year {years}.")
-        weather = random.randint(1,3)
+        weather = random.randint(1,6)
         plotindex = 0
-        if seasons[seasonindex] == "Winter" and weather == 2 or seasons[seasonindex] != "Winter" and weather == 3:            
-            money -= 105
-            print("A hailstorm rolled through! You paid 75 dollars for utilities & taxes, as well as an additional 30 dollars for building repairs!")
+        if seasons[seasonindex] == "Winter" and weather == 4 or seasons[seasonindex] != "Winter" and weather == 6:            
+            money -= 50
+            print("A hailstorm rolled through! You paid 35 dollars for utilities & taxes, as well as an additional 15 dollars for building repairs!")
         else:
-            money -= 75
-            print("You paid 75 dollars in utilities & taxes!")
+            money -= 35
+            print("You paid 35 dollars in utilities & taxes!")
         if money <= 0:
             bankrupt = True
         for num in plotstatus:
             crop = plotplant[plotindex]
             if plotplant[plotindex] != "":
                 if num != 0 and num != cropgrowtimes[crop]:
-                    if seasons[seasonindex] == "Winter" and weather != 3:
+                    if seasons[seasonindex] == "Winter" and weather != 5 and weather != 6:
                         dogrow = random.randint(1, 2)
                         if dogrow == 1:
                             plotstatus[plotindex] += 1
                         else:
                             plotstatus[plotindex] += 0
-                    elif seasons[seasonindex] == "Winter" and weather == 3:
+                    elif seasons[seasonindex] == "Winter" and weather == 5 or weather == 6:
                         print("There was a massive snowstorm. None of your plants were able to grow last night!")
                     else:
-                        if weather == 2:
+                        if weather == 4 or weather == 5:
                             growrate = seasongrowthmods[crop][seasons[seasonindex]] + 1
                         else:
                             growrate = seasongrowthmods[crop][seasons[seasonindex]]
@@ -349,6 +547,24 @@ while bankrupt != True:
                         if plotstatus[plotindex] > cropgrowtimes[crop]:
                             plotstatus[plotindex] = cropgrowtimes[crop]
             plotindex += 1
+        if hasanimals:
+            while len(animalstatus) < len(animals):
+                animalstatus.append(0)
+            while len(animalfed) < len(animals):
+                animalfed.append(False)
+
+            for i, animal in enumerate(animals):
+                if animal == "":
+                    continue
+                if animal not in animaltimes:
+                    continue
+                if animalfed[i]:
+                    animalstatus[i] += 1
+                if animalstatus[i] >= animaltimes[animal]:
+                    animalstatus[i] = animaltimes[animal]
+                
+                animalfed[i] = False
+
         sleepoption = input("Would you like to save and exit (y/n)? ")
         if sleepoption == "y":
             print("You fall into a deep dream! See you when you wake up!")
@@ -366,10 +582,18 @@ while bankrupt != True:
             config["bankrupt"] = bankrupt
             config["totalmoney"] = totalmoney
             config["cropsharvested"] = cropsharvested
+            config["animals"] = animals
+            config["animalstatus"] = animalstatus
+            config["plotupgrade"] = plotupgrade
+            config["animalupgrade"] = animalupgrade
+            config["fieldupgradeprice"] = fieldupgradeprice
+            config["animalupgradeprice"] = animalupgradeprice
+            config["hasanimals"] = hasanimals
+            config["animalfed"] = animalfed
             with open(filepath, "w") as f:
                 json.dump(config, f, indent=4)
             time.sleep(2)
-            sys.exit()
+            break
         if sleepoption == "n":
             sleepoption = ""
 
