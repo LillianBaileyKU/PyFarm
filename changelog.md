@@ -13,3 +13,9 @@ All notable changes to PyFarm.
 -Added random weather system (sunny, rain, hail, snow)
 -Weather affects crop growth and utilities cost
 -Fixed inventory bug when selling crops
+
+## [v0.3] - 20 February 2026
+-Pyfarm returned to development
+-Added animals, animal products, barn building/upgrading
+-Added field size upgrades
+-Fixed a bug in selling items

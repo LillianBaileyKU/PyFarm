@@ -28,5 +28,13 @@
     "seasonindex": 0,
     "bankrupt": false,
     "totalmoney": 0,
-    "cropsharvested": 0
+    "cropsharvested": 0,
+    "plotupgrade": 1,
+    "animalupgrade": 0,
+    "animalupgradeprice": 1000,
+    "fieldupgradeprice": 500,
+    "animals": [],
+    "animalstatus": [],
+    "animalfed": [],
+    "hasanimals": false
 }
