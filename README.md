@@ -1,3 +1,4 @@
+OWNER'S NOTE: Pyfarm is coming back after a long hiatus due to college scheduling!
 # PyFarm
 A lightweight text-based farming game written in Python.
 Tend your farm by planting, harvesting, and selling crops. Keep yourself out of bankruptcy!
@@ -8,6 +9,8 @@ Tend your farm by planting, harvesting, and selling crops. Keep yourself out of 
 * Manage your inventory
 * Buy seeds and sell crops at the shop
 * Keep track of days and farm finances
+* Upgrade your field size to plant more crops
+* Build a barn and tend to animals to make animal products
 * Save and load farm progress using JSON files
 
 ## Requirements
@@ -25,13 +28,16 @@ Tend your farm by planting, harvesting, and selling crops. Keep yourself out of 
   * View Field | Check the crops in your field
   * Plant Crops | Plant seeds from your inventory
   * Harvest Crops | Harvest fully grown crops
+  * Tend Animals | Check, feed, and harvest from animals if unlocked
   * View Inventory | Check your seeds and harvested crops
   * View Shop | Buy seeds or sell crops
   * Sleep | End the day, pay utilities/taxes, and progress crops to next growth stage
   * When sleeping, you will be prompted to save and exit. Progress is ONLY saved if you say yes and exit the game.
 
 ## Roadmap
-* Add animals and their products
-* Implement upgrades to the farm
 * Add random events
-* Add more crop types(?)
+* Market fluctuations (Bundled with overall economics update?)
+* Small-scale background storyline
+* Achievement system
+* NPCs
+* UI using PyGame
