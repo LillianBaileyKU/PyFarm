@@ -526,6 +526,79 @@ while bankrupt != True:
             print("You paid 35 dollars in utilities & taxes!")
         if money <= 0:
             bankrupt = True
+
+        randevent = random.randint(1, 100)
+        if randevent >= 1 and randevent <= 65:
+            pass
+        elif randevent >= 66 and randevent <= 85:
+            badevent = random.randint(1,4)
+            if badevent == 1:
+                money -= 20
+                print("You found some damage to the farmhouse, you had to pay 20 dollars for repairs!")
+            elif badevent == 2:
+                todamage = random.randint(0, (len(plotplant) - 1))
+                if plotplant[todamage] != "":
+                    plotstatus[todamage] -= 1
+                    print(f"The {plotplant[todamage]} in plot number {todamage + 1} got sick! It will take an extra day to grow!")
+            elif badevent == 3:
+                if len(animals) == 0:
+                    pass
+                else:
+                    todamage = random.randint(0, (len(animals) - 1))
+                    if animals[todamage] != "":
+                        animalstatus[todamage] -= 1
+                        print(f"The {animals[todamage]} in stall number {todamage + 1} got sick! They will take an extra day to produce!")
+            elif badevent == 4:
+                tolose = random.randint (0, (len(invnames) - 1))
+                item = invnames[tolose]
+                if invcounts[tolose] == 1:
+                    invnames.pop(tolose)
+                    invcounts.pop(tolose)
+                else:
+                    invcounts[tolose] -= 1
+                print(f"You were really tired last night! You lost one {item} on your way back to the farmhouse!")
+            else:
+                print("The random event call failed in some way! This will not end or affect your game, but please contact the developer!")
+        elif randevent >= 86 and randevent <= 99:
+            goodevent = random.randint(1,4)
+            if goodevent == 1:
+                money += 25
+                print("You found 25 dollars on the ground on your way back home from town!")
+            elif goodevent == 2:
+                tohelp = random.randint(0, (len(plotplant) - 1))
+                if plotplant[tohelp] != "":
+                    plotstatus[tohelp] += 1
+                    print(f"Your neighbor lended you some fertilizer for the {plotplant[tohelp]} in plot number {tohelp + 1}! It will grow one day quicker!")
+            elif goodevent == 3:
+                if len(animals) == 0:
+                    pass
+                else:
+                    tohelp = random.randint(0, (len(animals) - 1))
+                    if animals[tohelp] != "":
+                        animalstatus[tohelp] += 1
+                        print(f"The vet came by and gave the {animals[tohelp]} in stall number {tohelp + 1} some medicine! They will produce one day quicker!")
+            elif goodevent == 4:
+                seedstochoose = ["Wheat Seed", "Corn Seed", "Soybean Seed", "Tomato Seed", "Potato Seed", "Hay Seed"]
+                togive = seedstochoose[random.randint(0, 5)]
+                if togive in invnames:
+                    invcounts[invnames.index(togive)] += 1
+                else:
+                    invnames.append(togive)
+                    invcounts.append(1)
+                print(f"On your way back to the farmhouse you found an extra {togive} on the ground!")
+            else:
+                print("The random event call failed in some way! This will not end or affect your game, but please contact the developer!")
+        else:
+            rareevent = random.randint(1,2)
+            if rareevent == 1:
+                money += 250
+                print("You won the lottery tonight! You got 250 dollars, congratulations!")
+            elif rareevent == 2:
+                money -= 200
+                print("Your favourite tractor broke down last night and you had to pay 200 dollars to fix it!")
+            else:
+                print("The random event call failed in some way! This will not end or affect your game, but please contact the developer!")
+        
         for num in plotstatus:
             crop = plotplant[plotindex]
             if plotplant[plotindex] != "":
@@ -536,7 +609,7 @@ while bankrupt != True:
                             plotstatus[plotindex] += 1
                         else:
                             plotstatus[plotindex] += 0
-                    elif seasons[seasonindex] == "Winter" and weather == 5 or weather == 6:
+                    elif seasons[seasonindex] == "Winter" and (weather == 5 or weather == 6):
                         print("There was a massive snowstorm. None of your plants were able to grow last night!")
                     else:
                         if weather == 4 or weather == 5:
