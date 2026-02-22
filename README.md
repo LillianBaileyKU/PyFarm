@@ -11,6 +11,7 @@ Tend your farm by planting, harvesting, and selling crops. Keep yourself out of 
 * Keep track of days and farm finances
 * Upgrade your field size to plant more crops
 * Build a barn and tend to animals to make animal products
+* Random events that have a chance to occur every night
 * Save and load farm progress using JSON files
 
 ## Requirements
@@ -35,7 +36,6 @@ Tend your farm by planting, harvesting, and selling crops. Keep yourself out of 
   * When sleeping, you will be prompted to save and exit. Progress is ONLY saved if you say yes and exit the game.
 
 ## Roadmap
-* Add random events
 * Market fluctuations (Bundled with overall economics update?)
 * Small-scale background storyline
 * Achievement system
