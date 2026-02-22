@@ -19,3 +19,7 @@ All notable changes to PyFarm.
 -Added animals, animal products, barn building/upgrading
 -Added field size upgrades
 -Fixed a bug in selling items
+
+## [v0.4] - 22 February 2026
+-Added random events, there is a chance one will happen every night
+-Fixed a weather bug allowing snowstorms in any season
