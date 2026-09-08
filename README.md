@@ -1,4 +1,5 @@
-OWNER'S NOTE: Pyfarm is coming back after a long hiatus due to college scheduling!
+DEVELOPER'S NOTE: The codebase is undergoing an overhaul to make further development easier. The "DEV BACKUPS" folder is a copy of pyfarm.py from before the overhaul began, since I know this system works (Mostly). The "INDEV FILES" folder is a collection of the in-progress files I'm currently working on, which makes it easier for me to transfer between my desktop, laptop, and different operating systems. If you run these files, nothing will happen, and they are not currently implemented into the main pyfarm.py script. If you wish to play PyFarm, you need to run the pyfarm.py script in the main repo.
+
 # PyFarm
 A lightweight text-based farming game written in Python.
 Tend your farm by planting, harvesting, and selling crops. Keep yourself out of bankruptcy!
