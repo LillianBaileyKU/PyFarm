@@ -23,6 +23,12 @@ class Barn:
                 return True
         return False
 
+    def find_empty_stall(self):
+        for stall in self.animals:
+            if stall.type == None:
+                return True
+        return False
+
     def upgrade(self):
         for i in range(2):
             self.animals.append(Animal(None, 0, None, 0, False))

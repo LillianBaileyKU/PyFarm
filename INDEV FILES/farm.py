@@ -1,7 +1,6 @@
 from field import Field
 from barn import Barn
 from inventory import Inventory
-from plot import Plot
 
 class Farm:
     def __init__(self, name, money, days, years, seasonday, seasonindex, inventory, field, barn, bankrupt, totalmoney, cropsharvested):
@@ -27,9 +26,10 @@ class Farm:
 
     def add_money(self, amount):
         self.money += amount
+        self.total_money += amount
     
     def remove_money(self ,amount):
-        if self.money - amount > 0:
+        if self.money - amount >= 0:
             self.money -= amount
             return True
         else:
@@ -39,10 +39,10 @@ class Farm:
         self.days += 1
         self.season_day += 1
         if self.season_day > self.seasonlen:
-            self.seasonday = 1
+            self.season_day = 1
             self.season_index = (self.season_index + 1) % len(self.seasons)
             if self.season_index == 0:
-                years += 1
+                self.years += 1
     
     def check_bankruptcy(self):
         if self.money <= 0:
