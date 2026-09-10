@@ -37,6 +37,7 @@ Tend your farm by planting, harvesting, and selling crops. Keep yourself out of 
   * When sleeping, you will be prompted to save and exit. Progress is ONLY saved if you say yes and exit the game.
 
 ## Roadmap
+* Code overhaul for easier further development
 * Market fluctuations (Bundled with overall economics update?)
 * Small-scale background storyline
 * Achievement system
